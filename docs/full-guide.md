@@ -306,6 +306,7 @@ daily_stock_analysis/
 
 Dockerfile 使用多阶段构建，前端会在构建镜像时自动打包并内置到 `static/`。
 如需覆盖静态资源，可挂载本地 `static/` 到容器内 `/app/static`。
+运行中的 `server` 容器默认直接复用 `/app/static` 里的预构建产物，不要求容器内保留 `apps/dsa-web` 源码目录或运行时安装 `npm`；若 WebUI 无法打开，请优先确认 `/app/static/index.html` 是否存在。
 
 ### 快速启动
 
@@ -494,6 +495,8 @@ python main.py --schedule --no-run-immediately
 ```
 
 > 说明：定时模式每次触发前都会重新读取当前保存的 `STOCK_LIST`。如果同时传入 `--stocks`，该参数不会锁定后续计划执行的股票列表；需要临时只跑指定股票时，请使用非定时的单次运行命令。
+>
+> 从 `python main.py --schedule`、`python main.py --serve --schedule` 或等价内置调度模式启动后，WebUI 保存新的 `SCHEDULE_TIME` 会在下一轮调度检查内自动重绑 daily job，无需重启进程；旧的执行时间不会继续保留。
 
 #### 环境变量方式
 
